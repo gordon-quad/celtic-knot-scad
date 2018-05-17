@@ -18,6 +18,7 @@ use <celtic-knots.scad>
 use <Write.scad>
 
 sw = 5;
+sh = 2.5;
 
 translate([-sw*8, +sw*8, 0]) {
   block_group("Corners", ",.{}", "<>[]");
@@ -67,7 +68,6 @@ module char_block(c) {
 }
 
 module sample_tile(c) {
-  knot_tile(c, tile_width = sw);
+  linear_extrude(sh) knot_tile(c, tile_width = sw);
   color("lightgrey") knot_tile_boundary(sw);
 }
-  

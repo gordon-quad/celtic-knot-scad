@@ -28,10 +28,11 @@ cylinder(r = radius, h = height, center = true, $fn = segments);
 for (i = [ 0 : segments-1 ]) {
   difference() {
     rotate([-90, 0, i*angle]) translate([0, 0, l])
-      fine_knot([ "-rqrq--r",
-                  "wtdsYewt",
-                  "fa__fafa" ],
-                tile_width = tile_width, gap = gap, tile_height = inset);
+      linear_extrude(inset)
+        fine_knot([ "-rqrq--r",
+                    "wtdsYewt",
+                    "fa__fafa" ],
+                  tile_width = tile_width, gap = gap);
     rotate([0, 180, (+0.5+i)*angle]) translate([0,0,-radius]) cube(radius*2);
     rotate([0,   0, (-0.5+i)*angle]) translate([0,0,-radius]) cube(radius*2);
   }

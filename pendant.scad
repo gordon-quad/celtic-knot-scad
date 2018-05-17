@@ -26,10 +26,10 @@ k = [ (pointy ? "  <~>  " : "  ,~.  "),
       (pointy ? "  [-]  " : "  {-}  ")];
 
 // half height with no gap so it isn't in pieces
-knot(k, tile_width = tile_width, tile_height = tile_height/2, gap = 0);
+linear_extrude(tile_height/2) knot(k, tile_width = tile_width, gap = 0);
 
 // full height with a gap
-knot(k, tile_width = tile_width, tile_height = tile_height, gap = 1);
+linear_extrude(tile_height) knot(k, tile_width = tile_width, gap = 1);
 
 // loop for threading
 translate([0, tile_width*8, 0])
