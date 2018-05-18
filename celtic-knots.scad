@@ -9,7 +9,8 @@
  * Based loosely on http://nrich.maths.org/5365
  */
 
-knot_test = 1;
+knot_test = 8;
+margin_ratio = 0.80;
 sp = 22.5;
 if (knot_test == 1) {
 
@@ -119,7 +120,7 @@ if (knot_test == 1) {
 }
 
 module knot(knot, tile_width = 5, ribbon_width, gap) {
-  rrw = ribbon_width != undef ? ribbon_width : tile_width/sqrt(2);
+  rrw = ribbon_width != undef ? ribbon_width : tile_width*margin_ratio/sqrt(2);
   rgap = gap != undef ? gap : tile_width/(6*sqrt(2));
 
   x = len(knot[0]);
@@ -133,7 +134,7 @@ module knot(knot, tile_width = 5, ribbon_width, gap) {
 }
 
 module fine_knot(knot, tile_width = 5, ribbon_width, gap) {
-  rrw = ribbon_width != undef ? ribbon_width : tile_width/sqrt(2);
+  rrw = ribbon_width != undef ? ribbon_width : tile_width*margin_ratio/sqrt(2);
   rgap = gap != undef ? gap : tile_width/(6*sqrt(2));
 
   x = len(knot[0]);
@@ -147,7 +148,7 @@ module fine_knot(knot, tile_width = 5, ribbon_width, gap) {
 }
 
 module knot_piece(c, tile_width = 5, ribbon_width, gap) {
-  rrw = ribbon_width != undef ? ribbon_width : tile_width/sqrt(2);
+  rrw = ribbon_width != undef ? ribbon_width : tile_width*margin_ratio/sqrt(2);
   rgap = gap != undef ? gap : tile_width/(6*sqrt(2));
 
   if (c == " ") {
@@ -285,7 +286,7 @@ module knot_piece(c, tile_width = 5, ribbon_width, gap) {
 }
 
 module knot_tile(c, tile_width = 5, ribbon_width, gap) {
-  rrw = ribbon_width != undef ? ribbon_width : tile_width/sqrt(2);
+  rrw = ribbon_width != undef ? ribbon_width : tile_width*margin_ratio/sqrt(2);
   rgap = gap != undef ? gap : tile_width/(6*sqrt(2));
  
   if (c == " ") {                        // Blank
@@ -373,8 +374,8 @@ module knot_tile(c, tile_width = 5, ribbon_width, gap) {
 }
 
 module make_knot_piece(p, tile_width, ribbon_width, gap) {
-  rrw = ribbon_width != undef ? ribbon_width : tile_width/sqrt(2);
-  rgap = gap != undef ? gap : tile_width/(6*sqrt(2));
+  rrw = ribbon_width != undef ? ribbon_width : tile_width*margin_ratio/sqrt(2);
+  rgap = gap != undef ? gap : tile_width*margin_ratio/(6*sqrt(2));
 
   top_left   = [tile_width*0.5, -tile_width*0.5, 0];
   top_right  = [tile_width*1.5, -tile_width*0.5, 0];
@@ -387,8 +388,10 @@ module make_knot_piece(p, tile_width, ribbon_width, gap) {
   translate(bottom_right) knot_tile(p[3], tile_width, rrw, rgap);
 }
 
-module knot_tile_boundary(tile_width) {
-  square([tile_width*1.001, tile_width*1.001], center = true);
+module knot_tile_boundary(tile_width, margin_ratio = 1.0) {
+  translate([-tile_width*(1-margin_ratio)/4, -tile_width*(1-margin_ratio)/4])
+      square([tile_width*1.001 - tile_width*(1-margin_ratio)/2,
+              tile_width*1.001 - tile_width*(1-margin_ratio)/2], center = true);
 }
 
 module cross(tile_width, ribbon_width, gap) {
@@ -412,9 +415,26 @@ module cross(tile_width, ribbon_width, gap) {
   }
 }
 
+//curve(8,4);
 module curve(tile_width = 5, ribbon_width) {
   rrw2 = ribbon_width/sqrt(2);
-  a = tile_width + rrw2/(sqrt(2)-2);
+  twm = tile_width - tile_width*(1-margin_ratio)/2;
+  /*
+    ________
+    | B_~--|C
+    | /    |
+   A|/     |
+    |      |O
+    ^^^^^^^^
+    A = (0,rrw2);
+    B = (a,rrw2+a);
+    C = (tile_width, twm);
+    O = (tile_width, rrw2+2a-tile_width)
+    sqrt(2)*(tile_width - a) = twm - rrw2 - 2a + tile_width
+    r = twm - rrw2 - 2a + tile_width
+   */
+  //a = tile_width + rrw2/(sqrt(2)-2);
+  a = ((sqrt(2) - 1)*tile_width + rrw2 - twm)/(sqrt(2) - 2);
   intersection() {
     knot_tile_boundary(tile_width);
    union() {
@@ -423,8 +443,8 @@ module curve(tile_width = 5, ribbon_width) {
         translate([-tile_width/2+tile_width,
                    -tile_width/2+rrw2+2*a-tile_width])
           difference() {
-            circle(2*tile_width-rrw2-2*a);
-            circle(2*tile_width-rrw2-2*a-ribbon_width);
+            circle(tile_width-rrw2-2*a+twm);
+            circle(tile_width-rrw2-2*a-ribbon_width+twm);
           }
       }
       difference() {
@@ -464,11 +484,11 @@ module round_corner(tile_width = 5, ribbon_width) {
 
 module square_corner(tile_width = 5, ribbon_width) {
   intersection() {
-    knot_tile_boundary(tile_width);
+    knot_tile_boundary(tile_width, margin_ratio);
     union() {
-      translate([(tile_width-ribbon_width)/2, 0])
+      translate([(tile_width*margin_ratio-ribbon_width)/2, 0])
         square([ribbon_width,tile_width*2], center = true);
-      translate([0, (tile_width-ribbon_width)/2])
+      translate([0, (tile_width*margin_ratio-ribbon_width)/2])
         square([tile_width*2, ribbon_width], center = true);
     }
   }
@@ -477,7 +497,7 @@ module square_corner(tile_width = 5, ribbon_width) {
 module straight(tile_width = 5, ribbon_width) {
   intersection() {
     knot_tile_boundary(tile_width);
-    translate([(tile_width-ribbon_width)/2, 0])
+    translate([(tile_width*margin_ratio-ribbon_width)/2, 0])
       square([ribbon_width,tile_width*2], center = true);
   }
 }
