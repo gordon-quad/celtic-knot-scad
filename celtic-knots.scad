@@ -476,8 +476,8 @@ module round_corner(tile_width = 5, ribbon_width) {
     knot_tile_boundary(tile_width);
     translate([-tile_width/2, -tile_width/2])
       difference() {
-      circle(tile_width);
-      circle(tile_width-ribbon_width);
+      circle(tile_width - tile_width*(1-margin_ratio)/2);
+      circle((tile_width - tile_width*(1-margin_ratio)/2)-ribbon_width);
     }
   }
 }
