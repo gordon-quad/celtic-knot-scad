@@ -37,12 +37,12 @@ translate([+sw*9, -sw*3, 0]) char_block("&&&&");
 translate([-sw*3, -sw*11, 0]) char_block("tgfh");
 translate([+sw*3, -sw*11, 0]) char_block("TGFH");
 
-module knot_piece_boundary(tile_width = 5, tile_height = 5) {
+module knot_piece_boundary(tile_width = 5, tile_height = 0.5) {
  for (p = [ [tile_width*0.5, -tile_width*0.5, 0],
             [tile_width*1.5, -tile_width*0.5, 0],
             [tile_width*0.5, -tile_width*1.5, 0],
             [tile_width*1.5, -tile_width*1.5, 0] ]) {
-    translate(p) knot_tile_boundary(tile_width, tile_height);
+    translate(p) linear_extrude(tile_height) knot_tile_boundary(tile_width);
   }
 }
 

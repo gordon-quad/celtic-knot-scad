@@ -69,5 +69,5 @@ module char_block(c) {
 
 module sample_tile(c) {
   linear_extrude(sh) knot_tile(c, tile_width = sw);
-  color("lightgrey") knot_tile_boundary(sw);
+  color("lightgrey") linear_extrude(sh) knot_tile_boundary(sw);
 }
